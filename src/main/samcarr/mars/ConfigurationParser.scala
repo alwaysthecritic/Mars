@@ -3,21 +3,21 @@ package samcarr.mars
 import java.io.File
 import io.Source
 
-// Accept an iterator of the lines of config, so that we don't have to worry about
-// line endings and so that we can potentially handle in a 'streamed' manner.
-// qq Actually streaming may require very careful handling and a test to prove it's working!
-// qq Would be nice to report line numbers in error messages - zip numbers with lines at some point?
+
+class BadConfigurationException(message: String) extends Exception(message)
+
+
+// Accepting an iterator of the lines of config means we don't have to worry about line endings
+// and it's convenient for the caller, which is likely to use Source.fromFile("foo").getLines
 class ConfigurationParser(lines: Iterator[String]) {
   
     val MaxCommands = 100
     
-    // qq How to pick out duff file format and give useful errors whilst keeping happy path neat?
     def parse() : Configuration = {
         // First line is grid dimensions.
         val (maxX, maxY) = parseGridDimensions(lines.next)
         
         // Each subsequent set of 3 lines defines a robot journey (third line is a blank line).
-        // qq How to do this so that it effectively streams through without reading the whole 'file'?
         val robotMissions = lines.grouped(3).map(parseMission(_, maxX, maxY))
         
         Configuration(maxX, maxY, robotMissions.toSeq)
@@ -63,6 +63,3 @@ class ConfigurationParser(lines: Iterator[String]) {
         }
     }
 }
-
-// qq Is this the best way to define my own exception? Is there a more meaningful base class?
-class BadConfigurationException(message: String) extends Exception(message)
