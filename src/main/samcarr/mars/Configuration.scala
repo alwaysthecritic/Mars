@@ -6,8 +6,8 @@ case class Configuration(maxX:Int, maxY:Int, missions:Seq[Mission])
 case class Mission(startX:Int, startY:Int, facing:Direction.Value, commands:String)
 
 object Direction extends Enumeration {
-  val North = Value("N")
-  val South = Value("S")
-  val East = Value("E")
-  val West = Value("W")
+    val North = Value("N")
+    val South = Value("S")
+    val East = Value("E")
+    val West = Value("W")
 }

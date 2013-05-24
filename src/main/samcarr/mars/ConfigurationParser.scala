@@ -6,14 +6,13 @@ import io.Source
 
 class BadConfigurationException(message: String) extends Exception(message)
 
-
-// Accepting an iterator of the lines of config means we don't have to worry about line endings
-// and it's convenient for the caller, which is likely to use Source.fromFile("foo").getLines
-class ConfigurationParser(lines: Iterator[String]) {
+object ConfigurationParser {
   
     val MaxCommands = 100
     
-    def parse() : Configuration = {
+    // Accepting an iterator of the lines of config means we don't have to worry about line endings
+    // and it's convenient for the caller to use Source.fromFile("foo").getLines
+    def parse(lines: Iterator[String]) : Configuration = {
         // First line is grid dimensions.
         val (maxX, maxY) = parseGridDimensions(lines.next)
         

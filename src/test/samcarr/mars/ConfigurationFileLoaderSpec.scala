@@ -8,8 +8,7 @@ class ConfigurationFileLoaderSpec extends FlatSpec with ShouldMatchers {
     private val validConfig = List("5 3", "1 1 E", "RFRFRFRF", "", "3 2 N", "FRRFLLFFRRFLL").iterator
       
     "ConfigurationFileLoader" should "parse correctly formatted config" in {
-        val parser = new ConfigurationParser(validConfig)
-        val config = parser.parse()
+        val config = ConfigurationParser.parse(validConfig)
         
         config.maxX should equal (5)
         config.maxY should equal (3)
@@ -62,8 +61,7 @@ class ConfigurationFileLoaderSpec extends FlatSpec with ShouldMatchers {
     }
     
     private def checkExceptionMessage(configLines: List[String], expectedMessage: String) {
-        val parser = new ConfigurationParser(configLines.iterator)
-        val thrown = evaluating { parser.parse() } should produce [BadConfigurationException]
+        val thrown = evaluating { ConfigurationParser.parse(configLines.iterator) } should produce [BadConfigurationException]
         thrown.getMessage should be (expectedMessage)
     }
 }
