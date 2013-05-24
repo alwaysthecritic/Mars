@@ -16,18 +16,18 @@ class ConfigurationFileLoaderSpec extends FlatSpec with ShouldMatchers {
         val missions = config.missions.toArray
         missions should have length (2)
         
-        missions(0) should have {
-          'startX (1)
-          'startY (1)
-          'facing (Direction.East)
+        missions(0) should have (
+          'startX (1),
+          'startY (1),
+          'facing (Direction.East),
           'commands ("RFRFRFRF")
-        }
-        missions(1) should have {
-          'startX (3)
-          'startY (2)
-          'facing (Direction.North)
+        )
+        missions(1) should have (
+          'startX (3),
+          'startY (2),
+          'facing (Direction.North),
           'commands ("FRRFLLFFRRFLL")
-        }
+        )
     }
       
     it should "throw BadConfigurationException if grid dims are not integers" in {
