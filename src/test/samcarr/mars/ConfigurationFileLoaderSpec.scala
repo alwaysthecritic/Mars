@@ -17,11 +17,11 @@ class ConfigurationFileLoaderSpec extends FlatSpec with ShouldMatchers {
         missions should have length (2)
         
         missions(0) should have (
-            'startSituation (RobotSituation(1, 1, Direction.East)),
+            'startSituation (HappyRobotSituation(1, 1, Direction.East)),
             'commands ("RFRFRFRF")
         )
         missions(1) should have (
-            'startSituation (RobotSituation(3, 2, Direction.North)),
+            'startSituation (HappyRobotSituation(3, 2, Direction.North)),
             'commands ("FRRFLLFFRRFLL")
         )
     }

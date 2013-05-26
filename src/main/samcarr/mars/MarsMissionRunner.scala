@@ -35,29 +35,73 @@ class MarsMissionRunner(config: Configuration) {
     // qq Need to represent whether robot was lost or not - perhaps in situation?
     //     Introduce new type to cover this, use pattern matching?
     private def leftCommand(situation: RobotSituation): RobotSituation = {
-        situation.left()
+        situation match {
+           case happy @ HappyRobotSituation(x, y, facing) => left(happy)
+           case lost @ LostRobotSituation(_,_,_) => lost
+        }
+    }
+    
+    private def left(situation: HappyRobotSituation): RobotSituation = {
+        val newDirection = situation.facing match {
+            case North => West
+            case East => North
+            case South => East
+            case West => South
+        }
+        HappyRobotSituation(situation.x, situation.y, newDirection)
     }
     
     // qq Could have done something clever with enum.id % 4, but simple case mapping is more robust and insulated.
     private def rightCommand(situation: RobotSituation): RobotSituation = {
-        situation.right()
+        situation match {
+           case happy @ HappyRobotSituation(x, y, facing) => right(happy)
+           case lost @ LostRobotSituation(_,_,_) => lost
+        }
     }
-      
+    
+    private def right(situation: HappyRobotSituation): RobotSituation = {
+        val newDirection = situation.facing match {
+            case North => East
+            case East => South
+            case South => West
+            case West => North
+        }
+        HappyRobotSituation(situation.x, situation.y, newDirection)
+    }
+    
+    // qq Would be nice to be monadic about this, so lost robot takes care of itself without
+    //    explicit checks through the code.
     private def forwardCommand(situation: RobotSituation): RobotSituation = {
-        val newSituation = situation.forward()
+        situation match {
+           case happy @ HappyRobotSituation(x, y, facing) => forward(happy)
+           case lost @ LostRobotSituation(_,_,_) => lost
+        }
+    }
+    
+    private def forward(situation: HappyRobotSituation): RobotSituation = {
+        val potentialNewSituation = situation.facing match {
+            case North => HappyRobotSituation(situation.x, situation.y + 1, situation.facing)
+            case East => HappyRobotSituation(situation.x + 1, situation.y, situation.facing)
+            case South => HappyRobotSituation(situation.x, situation.y - 1, situation.facing)
+            case West => HappyRobotSituation(situation.x - 1, situation.y, situation.facing)
+        }
         
-        // qq Use pattern matching or some othe functional approach to avoid nest ifs?
-        //    That will probably work better as a data pipeline once scent map is being passed too.
-        if (!newSituation.inBounds(config.maxX, config.maxY)) {
+        def inBounds(sit: RobotSituation, maxX: Int, maxY: Int): Boolean = {
+            sit.x >= 0 && sit.x <= maxX && sit.y >= 0 && sit.y <= maxY
+        }
+            
+        // qq Use pattern matching or some other functional approach to avoid nested ifs?
+        //    That will probably work better as a data pipeline once scent map is being passed immutable too.
+        if (!inBounds(potentialNewSituation, config.maxX, config.maxY)) {
             // If previous position was scent-marked, simply ignore the forward command.
             if (scentMap(situation.x, situation.y)) {
                 situation
             } else {
                 scentMap.add((situation.x, situation.y))
-                situation.lost()
+                LostRobotSituation(situation.x, situation.y, situation.facing)
             }
         } else {
-            newSituation
+            potentialNewSituation
         }
     }
 }
