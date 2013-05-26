@@ -10,5 +10,8 @@ object Mars {
         // Note that this will respect any line endings: \r, \n, \r\n.
         val lines = Source.fromFile("sampleData/sample1.txt", "UTF8").getLines
         val config = ConfigurationParser.parse(lines)
+        
+        val missionRunner = new MarsMissionRunner(config)
+        val finishPositions = missionRunner.runMissions()
     }
 }
