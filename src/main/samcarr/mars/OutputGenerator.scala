@@ -1,7 +1,8 @@
 package samcarr.mars
 
 object OutputGenerator {
-  
+    
+    // Given a list of Robots, generate String in the output format required, one line per Robot.
     def render(robots: Seq[Robot]): String = {
         val lines = robots.map {
             _ match {
