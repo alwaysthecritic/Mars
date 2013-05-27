@@ -4,8 +4,9 @@ To help learn Scala I used the classic Mars robot challenge.
 
 Because I was learning Scala and avoiding looking at anybody else's solutions, I may have done naive things!
 
-The interesting aspects of my solutions are as follows.
+## Notes
 
+- Mars contains the main function - start here.
 - A functional approach is used for simulating the missions, preferring immutable data and a pipeline that transforms it (into new immutable data).
     - The string of robot commands are mapped into a list of functions each of which takes a Robot and returns a new Robot. Given a start Robot, running all the command functions on it delivers the end Robot.
     - The abstract Robot class records a specific position and direction of a Robot. HappyRobot and LostRobot case classes extend Robot (algebraic data types) which allows the lost case to be neatly handled by the command functions by simply returning the lost robot as is.
