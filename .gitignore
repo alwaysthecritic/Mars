@@ -13,3 +13,6 @@
 /.cache
 /.idea
 /.settings
+
+# other
+/sampleData/output*
