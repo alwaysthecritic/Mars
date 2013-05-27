@@ -7,7 +7,7 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
   
     private val validConfig = List("5 3", "1 1 E", "RFRFRFRF", "", "3 2 N", "FRRFLLFFRRFLL").iterator
       
-    "ConfigurationFileLoader" should "parse correctly formatted config" in {
+    "ConfigurationParser" should "parse correctly formatted config" in {
         val config = ConfigurationParser.parse(validConfig)
         
         config.maxX should equal (5)
