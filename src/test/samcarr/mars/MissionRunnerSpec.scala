@@ -16,8 +16,8 @@ class MissionRunnerSpec extends FlatSpec with ShouldMatchers {
         
         results should have length (3)
         
-        results(0) should be (HappyRobotSituation(1, 1, Direction.East))
-        results(1) should be (LostRobotSituation(3, 3, Direction.North))
-        results(2) should be (HappyRobotSituation(2, 3, Direction.South))
+        results(0) should be (HappyRobot(1, 1, Direction.East))
+        results(1) should be (LostRobot(3, 3, Direction.North))
+        results(2) should be (HappyRobot(2, 3, Direction.South))
     }
 }

@@ -50,7 +50,7 @@ object ConfigurationParser {
           case _ => throw new BadConfigurationException("Commands not recognised (only LRF allowed) or too long (max %s): %s".format(MaxCommands, secondLine))
         }
         
-        Mission(HappyRobotSituation(startX, startY, direction), commands)
+        Mission(HappyRobot(startX, startY, direction), commands)
     }
     
     private def parseRobotStart(line:String): (Int, Int) = {
