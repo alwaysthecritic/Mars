@@ -14,6 +14,7 @@ class MarsMissionRunner(config: Configuration) {
     }
     
     private def runMission(mission: Mission): Robot = {
+        // Map the command characters (L, R, F) into functions and then apply them in sequence.
         val commands = mission.commands.map(functionForChar(_))
         commands.foldLeft(mission.startSituation) { (robot, command) => command(robot) }
     }
@@ -25,16 +26,11 @@ class MarsMissionRunner(config: Configuration) {
             case 'F' => ifNotLost(forward)
         }
     }
-    
-    // qq Move commands elsewhere? Maybe better off here for locality of reference, but a bit big now.
-    // qq Find a way to get commands statically typed in a descriptive way: type alias?
-    // qq Perhaps make this a pure function by passing the scentMap through too (immutable) so
-    // returning a pair of sit and scentMap.
 
     // This is setup to allow currying: effectively wrapping the specific robot commands.
     private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = {
         robot match {
-            case happy @ HappyRobot(x, y, facing) => func(happy)
+            case happy @ HappyRobot(_, _, _) => func(happy)
             case lost @ LostRobot(_,_,_) => lost
         }
     }
