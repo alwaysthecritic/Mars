@@ -3,7 +3,7 @@ package samcarr.mars
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers
 
-class ConfigurationFileLoaderSpec extends FlatSpec with ShouldMatchers {
+class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
   
     private val validConfig = List("5 3", "1 1 E", "RFRFRFRF", "", "3 2 N", "FRRFLLFFRRFLL").iterator
       
