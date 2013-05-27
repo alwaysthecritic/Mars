@@ -4,6 +4,7 @@ import scala.io.Source
 import java.io.PrintWriter
 import java.io.FileNotFoundException
 
+// The main runnable object - reads config file, outputs results.
 object Mars {
     
     val FileEncoding = "UTF8"
@@ -32,18 +33,15 @@ object Mars {
     }
     
     private def withPrintWriter(filePath: String)(op: PrintWriter => Unit) {
-        val writer = new PrintWriter(filePath)
         try {
+            // PrintWriter constructor could throw exceptions, which we catch.
             val writer = new PrintWriter(filePath, FileEncoding)
-            op(writer)
-            writer.close()
+            try op(writer)
+            finally writer.close()
         }
         catch {
             case e: FileNotFoundException => println("Could not write to file: %s, exception: %s".format(filePath, e.getMessage()))
-            case e: Throwable => println("Unexpected error attempting to write to file: %s, exception: %s".format(filePath, e.getMessage()))
-        }
-        finally {
-            writer.close()
+            case e: SecurityException => println("Access denied to write to file: %s, exception: %s".format(filePath, e.getMessage()))
         }
     }
 }
