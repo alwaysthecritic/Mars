@@ -46,6 +46,17 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
         checkExceptionMessage(config, "Couldn't parse robot start position from line: 1 222 E")
     }
     
+    it should "throw BadConfigurationException if robot start coords are out of bounds" in {
+        // Just inside boundary conditions - no exception thrown.
+        ConfigurationParser.parse(List("10 10", "10 10 E", "L").iterator)
+        ConfigurationParser.parse(List("10 10", "0 0 E", "L").iterator)
+        
+        // Just outside boundary conditions - exception thrown with correct message.
+        // Note that negative start positions would fail parsing (not bounds check) as '-' is not allowed.
+        checkExceptionMessage(List("10 10", "11 0 E", "L"), "Robot start position out of bounds: 11 0 E")
+        checkExceptionMessage(List("10 10", "0 11 E", "L"), "Robot start position out of bounds: 0 11 E")
+    }
+    
     it should "throw BadConfigurationException if robot start direction not one of NSEW" in {
         val config = List("10 10", "1 1 Z")
         checkExceptionMessage(config, "Couldn't parse robot start position from line: 1 1 Z")

@@ -41,13 +41,13 @@ object ConfigurationParser {
         }
         
         if (startX > maxX || startY > maxY)
-          throw new BadConfigurationException("Robot start position out of bounds: %d %d".format(startX, startY))
+            throw new BadConfigurationException("Robot start position out of bounds: " + firstLine)
         
         val secondLine = lines(1)
         val secondLineFormat = """^([LRF]{0,%s})$""".format(MaxCommands).r
         val commands = secondLine match {
-          case secondLineFormat(commands) => commands
-          case _ => throw new BadConfigurationException("Commands not recognised (only LRF allowed) or too long (max %s): %s".format(MaxCommands, secondLine))
+            case secondLineFormat(commands) => commands
+            case _ => throw new BadConfigurationException("Commands not recognised (only LRF allowed) or too long (max %s): %s".format(MaxCommands, secondLine))
         }
         
         Mission(HappyRobot(startX, startY, direction), commands)
