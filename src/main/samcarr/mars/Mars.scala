@@ -28,9 +28,11 @@ object Mars {
         
         val file = new File(filePath)
         try {
-            // This will respect any line endings: \r, \n, \r\n.
-            val configLines = Source.fromFile(file, FileEncoding).getLines
-            Some(ConfigurationParser.parse(configLines))
+            withSource(file) { source =>
+                // getLines will respect any line endings: \r, \n, \r\n.
+                val lines = source.getLines
+                Some(ConfigurationParser.parse(lines))
+            }
         }
         catch {
            case e: FileNotFoundException => {
@@ -51,6 +53,14 @@ object Mars {
         println("Wrote output to " + filePath)
     }
     
+    // Ensures Source is closed.
+    private def withSource[A](file: File)(op: Source => A): A = {
+        val source = Source.fromFile(file, FileEncoding)
+        try op(source)
+        finally source.close()
+    }
+    
+    // Ensures PrintWriter is closed and prints any exceptions arising from constructor.
     private def withPrintWriter(filePath: String)(op: PrintWriter => Unit) {
         try {
             // PrintWriter constructor could throw exceptions, which we catch.
