@@ -28,7 +28,7 @@ object Mars {
         
         val file = new File(filePath)
         try {
-            // Note that this will respect any line endings: \r, \n, \r\n.
+            // This will respect any line endings: \r, \n, \r\n.
             val configLines = Source.fromFile(file, FileEncoding).getLines
             Some(ConfigurationParser.parse(configLines))
         }

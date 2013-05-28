@@ -23,7 +23,7 @@ object ConfigurationParser {
         // Each subsequent set of 3 lines defines a robot journey (third line is a blank line).
         val robotMissions = lines.grouped(3).map(parseMission(_, maxX, maxY))
         
-        Configuration(maxX, maxY, robotMissions.toSeq)
+        Configuration(maxX, maxY, robotMissions.toList)
     }
     
     private def parseGridDimensions(line:String): (Int, Int) = {
