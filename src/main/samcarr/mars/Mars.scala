@@ -12,14 +12,11 @@ object Mars {
     implicit val FileEncoding = Utf8
     
     def main(args: Array[String]) {
-        println("Welcome to Mars!")
-
         val inputFilePath = if (args.length >= 1) args(0) else "sampleData/sample1.txt"
         val outputFilePath = if (args.length >= 2) args(1) else "sampleData/output1.txt"
           
-        val config = readConfig(inputFilePath)
-        if (config.isDefined) {
-            val finishedRobots = new MarsMissionRunner(config.get).runMissions()
+        readConfig(inputFilePath).map { config =>
+            val finishedRobots = new MarsMissionRunner(config).runMissions()
             writeOutput(outputFilePath, finishedRobots)
         }
     }
