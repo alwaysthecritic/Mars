@@ -3,7 +3,7 @@ package samcarr.mars
 import scala.collection.mutable
 import Direction._
 
-class MarsMissionRunner(config: Configuration) {
+class MissionRunner(config: Configuration) {
     
     // Use a set to keep track of grid positions where a robot has left a scent, on the presumption
     // that scented positions are sparse - certainly only at the edges of the grid.

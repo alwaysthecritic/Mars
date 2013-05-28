@@ -11,7 +11,7 @@ class MissionRunnerSpec extends FlatSpec with ShouldMatchers {
     val config = ConfigurationParser.parse(configLines)
   
     "MissionRunner" should "produce expected output for missions" in {
-        val missionRunner = new MarsMissionRunner(config)
+        val missionRunner = new MissionRunner(config)
         val results = missionRunner.runMissions()
         
         results should have length (3)

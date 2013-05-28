@@ -16,7 +16,7 @@ object Mars {
         val outputFilePath = if (args.length >= 2) args(1) else "sampleData/output1.txt"
           
         readConfig(inputFilePath).map { config =>
-            val finishedRobots = new MarsMissionRunner(config).runMissions()
+            val finishedRobots = new MissionRunner(config).runMissions()
             writeOutput(outputFilePath, finishedRobots)
         }
     }
