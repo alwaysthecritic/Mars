@@ -16,7 +16,7 @@ class MissionRunner(config: Configuration) {
     private def runMission(mission: Mission): Robot = {
         // Map the command characters (L, R, F) into functions and then apply them in sequence.
         val commands = mission.commands.map(functionForChar(_))
-        commands.foldLeft(mission.startSituation) { (robot, command) => command(robot) }
+        commands.foldLeft(mission.start) { (robot, command) => command(robot) }
     }
     
     private def functionForChar(command: Char): (Robot => Robot) = {

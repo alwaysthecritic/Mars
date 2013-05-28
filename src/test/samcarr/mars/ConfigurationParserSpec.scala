@@ -17,11 +17,11 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
         missions should have length (2)
         
         missions(0) should have (
-            'startSituation (HappyRobot(1, 1, Direction.East)),
+            'start (HappyRobot(1, 1, Direction.East)),
             'commands ("RFRFRFRF")
         )
         missions(1) should have (
-            'startSituation (HappyRobot(3, 2, Direction.North)),
+            'start (HappyRobot(3, 2, Direction.North)),
             'commands ("FRRFLLFFRRFLL")
         )
     }
