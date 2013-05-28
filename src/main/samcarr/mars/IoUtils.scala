@@ -8,7 +8,7 @@ import java.io.PrintWriter
 // Utilities for IO, to hide some of the nasties of dealing with the Java classes, especially
 // exception handling and closing resources.
 // This is not a completely generic implementation - it is somewhat specific to the needs of the
-// surrounding codebase, for instance printing errors direcly to the console.
+// surrounding codebase, for instance printing errors directly to the console.
 object IoUtils {
     
     case class FileEncoding(name: String)
