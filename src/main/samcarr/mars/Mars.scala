@@ -9,7 +9,7 @@ import IoUtils._
 // The main runnable object - reads config file, outputs results.
 object Mars {
     
-    val FileEncoding = "UTF8"
+    implicit val FileEncoding = Utf8
     
     def main(args: Array[String]) {
         println("Welcome to Mars!")

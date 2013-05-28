@@ -10,13 +10,14 @@ import java.io.PrintWriter
 // This is not a completely generic implementation - it is somewhat specific to the needs of the
 // surrounding codebase, for instance fixing the encoding to UTF8 and printing errors to the console.
 object IoUtils {
-  
-    val FileEncoding = "UTF8"
+    
+    case class FileEncoding(name: String)
+    val Utf8 = FileEncoding("UTF8")
     
     // Ensures Source is closed and covers FileNotFoundException.
-    def withSource[A](file: File)(op: Source => Option[A]): Option[A] = {
+    def withSource[A](file: File)(op: Source => Option[A])(implicit encoding: FileEncoding): Option[A] = {
         try {
-            val source = Source.fromFile(file, FileEncoding)
+            val source = Source.fromFile(file, encoding.name)
             try op(source)
             finally source.close()
         }
@@ -29,10 +30,10 @@ object IoUtils {
     }
     
     // Ensures PrintWriter is closed and prints any exceptions arising from constructor.
-    def withPrintWriter(filePath: String)(op: PrintWriter => Unit) {
+    def withPrintWriter(filePath: String)(op: PrintWriter => Unit)(implicit encoding: FileEncoding) {
         try {
             // PrintWriter constructor could throw exceptions, which we catch.
-            val writer = new PrintWriter(filePath, FileEncoding)
+            val writer = new PrintWriter(filePath, encoding.name)
             try op(writer)
             finally writer.close()
         }
