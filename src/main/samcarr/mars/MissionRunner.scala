@@ -10,13 +10,12 @@ class MissionRunner(config: Configuration) {
     val scentMap = new mutable.HashSet[(Int, Int)]
     
     def runMissions(): Seq[Robot] = {
-        config.missions.map(runMission(_))
-    }
-    
-    private def runMission(mission: Mission): Robot = {
-        // Map the command characters (L, R, F) into functions and then apply them in sequence.
-        val commands = mission.commands.map(functionForChar(_))
-        commands.foldLeft(mission.start) { (robot, command) => command(robot) }
+        config.missions.map { mission =>
+            // Map the command characters (L, R, F) into functions and then apply them in sequence,
+            // taking an initial Robot through to a finish Robot.
+            val commands = mission.commands.map(functionForChar(_))
+            commands.foldLeft(mission.start) { (robot, command) => command(robot) }
+        }
     }
     
     private def functionForChar(command: Char): (Robot => Robot) = {
@@ -27,7 +26,8 @@ class MissionRunner(config: Configuration) {
         }
     }
 
-    // This is setup to allow currying: effectively wrapping the specific robot commands.
+    // This is setup to allow currying: effectively wrapping the specific robot commands
+    // and ignoring them if the robot has already been lost.
     private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = {
         robot match {
             case happy @ HappyRobot(_, _, _) => func(happy)
