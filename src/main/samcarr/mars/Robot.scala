@@ -2,6 +2,7 @@ package samcarr.mars
 
 import Direction._
 
+// Algebraic data type.
 sealed abstract class Robot {
     val x: Int
     val y: Int
