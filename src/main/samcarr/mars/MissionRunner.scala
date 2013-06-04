@@ -8,7 +8,10 @@ class MissionRunner(config: Configuration) {
     // Use a set to keep track of grid positions where a robot has left a scent, on the presumption
     // that scented positions are sparse - certainly only at the edges of the grid.
     val scentMap = new mutable.HashSet[(Int, Int)]
-    
+
+    val leftTurnMap = Map(North -> West, East -> North, South -> East, West -> South)
+    val rightTurnMap = Map(North -> East, East -> South, South -> West, West -> North)
+
     def runMissions(): Seq[Robot] = {
         config.missions.map { mission =>
             // Map the command characters (L, R, F) into functions and then apply them in sequence,
@@ -18,44 +21,24 @@ class MissionRunner(config: Configuration) {
         }
     }
     
-    private def functionForChar(command: Char): (Robot => Robot) = {
-        command match {
-            case 'L' => ifNotLost(left)
-            case 'R' => ifNotLost(right)
-            case 'F' => ifNotLost(forward)
-        }
+    private def functionForChar(command: Char): (Robot => Robot) = command match {
+        case 'L' => ifNotLost(left)
+        case 'R' => ifNotLost(right)
+        case 'F' => ifNotLost(forward)
     }
 
     // This is setup to allow currying: effectively wrapping the specific robot commands
     // and ignoring them if the robot has already been lost.
-    private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = {
-        robot match {
-            case happy @ HappyRobot(_, _, _) => func(happy)
-            case lost @ LostRobot(_,_,_) => lost
-        }
+    private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = robot match {
+        case happy @ HappyRobot(_, _, _) => func(happy)
+        case lost @ LostRobot(_,_,_) => lost
     }
     
-    private def left(robot: HappyRobot): Robot = {
-        val newDirection = robot.facing match {
-            case North => West
-            case East => North
-            case South => East
-            case West => South
-        }
-        HappyRobot(robot.x, robot.y, newDirection)
-    }
+    private def left(robot: HappyRobot) = HappyRobot(robot.x, robot.y, leftTurnMap(robot.facing))
     
-    private def right(robot: HappyRobot): Robot = {
-        val newDirection = robot.facing match {
-            case North => East
-            case East => South
-            case South => West
-            case West => North
-        }
-        HappyRobot(robot.x, robot.y, newDirection)
-    }
+    private def right(robot: HappyRobot) = HappyRobot(robot.x, robot.y, rightTurnMap(robot.facing))
     
-    private def forward(robot: HappyRobot): Robot = {
+    private def forward(robot: HappyRobot) = {
         val potentialNewSituation = robot.facing match {
             case North => HappyRobot(robot.x, robot.y + 1, robot.facing)
             case East => HappyRobot(robot.x + 1, robot.y, robot.facing)
