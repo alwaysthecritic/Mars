@@ -61,6 +61,6 @@ object ConfigurationParser {
     
     private def parseMissionCommands(line: String) = line match {
         case MissionCommandsRegex(commands) => Right(commands)
-        case _ => Left(FailParsing(s"Commands not recognised (only LRF allowed) or too long (max $MaxCommands): line"))
+        case _ => Left(FailParsing(s"Commands not recognised (only LRF allowed) or too long (max $MaxCommands): $line"))
     }
 }
