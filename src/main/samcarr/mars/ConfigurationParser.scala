@@ -2,8 +2,7 @@ package samcarr.mars
 
 import java.io.File
 import io.Source
-
-//qq class BadConfigurationException(message: String) extends Exception(message)
+import scala.collection.mutable.ListBuffer
 
 sealed case class FailParsing(reason:String)
 
@@ -16,21 +15,27 @@ object ConfigurationParser {
     val MissionStartRegex = """^(\d{1,2}) (\d{1,2}) ([NSEW])$""".r
     val MissionCommandsRegex = """^([LRF]{0,%s})$""".format(MaxCommands).r
     
-    // Accepting an iterator of the lines of config means we don't have to worry about line endings
-    // and it's convenient for the caller to use Source.fromFile("foo").getLines
+    // Accepting an iterator of config lines means we can parse lazily, but also we don't have to
+    // worry about line endings and it's convenient for the caller to use Source.fromFile("foo").getLines.
     def parse(lines: Iterator[String]) : Either[FailParsing, Configuration] = {
         // First line is grid dimensions.
         parseGridDimensions(lines.next).right.flatMap { case (maxX, maxY) =>
-            // Each subsequent set of 3 lines defines a robot journey (third line is a blank line).
-            val emptyMissionList = Right(List(): List[Mission]): Either[FailParsing, List[Mission]]
-            val robotMissions = lines.grouped(3).foldRight(emptyMissionList) { (threeLines, missions) =>
-                missions.right.flatMap { existingMissions =>
-                    // qq Builds list in right order because of foldRight but would stackoverflow for big lists!
-                    parseMission(threeLines, maxX, maxY).right map (mission => mission :: existingMissions)
-                }
-            }
-            robotMissions.right.map { missions => Configuration(maxX, maxY, missions) }
+            // Each subsequent set of 3 lines defines a robot journey (third line of which is blank).
+            val missionLines = lines.grouped(3)
+            // This is all lazy, so stops parsing missions if a failure is found.
+            val missions = missionLines map (parseMission(_, maxX, maxY))
+            failIfAnyFailed(missions.toSeq).right map (missions => Configuration(maxX, maxY, missions.toList))
         }
+    }
+    
+    def failIfAnyFailed[A,B](items: Seq[Either[A,B]]): Either[A, Seq[B]] = {
+        @annotation.tailrec
+        def go(acc: ListBuffer[B], eithers: Seq[Either[A,B]]): Either[A, Seq[B]] = eithers match {
+            case Nil => Right(acc.toSeq)
+            case Left(a) #:: t => Left(a)
+            case Right(b) #:: t => go(acc += b, t)
+        }
+        go(ListBuffer[B](), items)
     }
     
     private def parseGridDimensions(line:String): Either[FailParsing, (Int, Int)] = line match {
@@ -39,6 +44,8 @@ object ConfigurationParser {
     }
     
     private def parseMission(lines: Seq[String], maxX:Int, maxY:Int): Either[FailParsing, Mission] = {
+        // qq Would be nice to use a for comprehension, but Either.right doesn't support pattern matching
+        // for a tuple in a case statement (because it doesn't have filter/withFilter). Similarly in parse().
         parseMissionStartPos(lines(0), maxX, maxY).right flatMap { case (x, y, direction) =>
             parseMissionCommands(lines(1)).right map (commands => Mission(HappyRobot(x, y, direction), commands))
         }
