@@ -26,15 +26,10 @@ object Mars {
         
         val file = new File(filePath)
         withSource(file) { source =>
-            try {
-                // getLines will respect any line endings: \r, \n, \r\n.
-                Some(ConfigurationParser.parse(source.getLines))
-            }
-            catch {
-                case e: BadConfigurationException => {
-                    println("Couldn't parse config: " + e.getMessage())
-                    None
-                }
+            // getLines will respect any line endings: \r, \n, \r\n.
+            ConfigurationParser.parse(source.getLines) match {
+                case Right(config) => Some(config)
+                case Left(FailParsing(reason)) => println(s"Couldn't parse config: $reason"); None
             }
         }
     }
