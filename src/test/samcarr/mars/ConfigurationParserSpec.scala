@@ -8,7 +8,7 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
     private val validConfig = List("5 3", "1 1 E", "RFRFRFRF", "", "3 2 N", "FRRFLLFFRRFLL").iterator
       
     "ConfigurationParser" should "parse correctly formatted config" in {
-        val config = ConfigurationParser.parse(validConfig).right.get
+        val config = ConfigurationParser.parse(validConfig.toSeq).right.get
         
         config.maxX should equal (5)
         config.maxY should equal (3)
@@ -48,8 +48,8 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
     
     it should "fail if robot start coords are out of bounds" in {
         // Just inside boundary conditions - no exception thrown.
-        ConfigurationParser.parse(List("10 10", "10 10 E", "L").iterator)
-        ConfigurationParser.parse(List("10 10", "0 0 E", "L").iterator)
+        ConfigurationParser.parse(List("10 10", "10 10 E", "L").toSeq)
+        ConfigurationParser.parse(List("10 10", "0 0 E", "L").toSeq)
         
         // Just outside boundary conditions - exception thrown with correct message.
         // Note that negative start positions would fail parsing (not bounds check) as '-' is not allowed.
@@ -68,6 +68,6 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
     }
     
     private def checkFailureMessage(configLines: List[String], message: String) {
-        ConfigurationParser.parse(configLines.iterator) should be (Left(FailParsing(message)))
+        ConfigurationParser.parse(configLines.toSeq) should be (Left(FailParsing(message)))
     }
 }

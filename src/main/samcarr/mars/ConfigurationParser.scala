@@ -15,27 +15,27 @@ object ConfigurationParser {
     val MissionStartRegex = """^(\d{1,2}) (\d{1,2}) ([NSEW])$""".r
     val MissionCommandsRegex = """^([LRF]{0,%s})$""".format(MaxCommands).r
     
-    // Accepting an iterator of config lines means we can parse lazily, but also we don't have to
-    // worry about line endings and it's convenient for the caller to use Source.fromFile("foo").getLines.
-    def parse(lines: Iterator[String]) : Either[FailParsing, Configuration] = {
+    def parse(lines: Seq[String]) : Either[FailParsing, Configuration] = {
+        // qq Should check that there *is* a first line, and second line...
         // First line is grid dimensions.
-        parseGridDimensions(lines.next).right.flatMap { case (maxX, maxY) =>
+        parseGridDimensions(lines.head).right.flatMap { case (maxX, maxY) =>
             // Each subsequent set of 3 lines defines a robot journey (third line of which is blank).
-            val missionLines = lines.grouped(3)
-            // This is all lazy, so stops parsing missions if a failure is found.
+            val missionLines = lines.tail.grouped(3)
+            // Because missionLines is an iterator, this is all (deliberately) lazy from here on, so
+            // won't actually parse all missions if a failure is found.
             val missions = missionLines map (parseMission(_, maxX, maxY))
-            failIfAnyFailed(missions.toSeq).right map (missions => Configuration(maxX, maxY, missions.toList))
+            failIfAnyFailed(missions.toStream).right map (missions => Configuration(maxX, maxY, missions.toList))
         }
     }
     
-    def failIfAnyFailed[A,B](items: Seq[Either[A,B]]): Either[A, Seq[B]] = {
+    def failIfAnyFailed[A,B](eithers: Stream[Either[A,B]]): Either[A, Seq[B]] = {
         @annotation.tailrec
         def go(acc: ListBuffer[B], eithers: Seq[Either[A,B]]): Either[A, Seq[B]] = eithers match {
-            case Nil => Right(acc.toSeq)
-            case Left(a) #:: t => Left(a)
+            case Stream.Empty => Right(acc.toSeq)
+            case Left(a) #:: _ => Left(a)
             case Right(b) #:: t => go(acc += b, t)
         }
-        go(ListBuffer[B](), items)
+        go(ListBuffer[B](), eithers)
     }
     
     private def parseGridDimensions(line:String): Either[FailParsing, (Int, Int)] = line match {

@@ -27,7 +27,7 @@ object Mars {
         val file = new File(filePath)
         withSource(file) { source =>
             // getLines will respect any line endings: \r, \n, \r\n.
-            ConfigurationParser.parse(source.getLines) match {
+            ConfigurationParser.parse(source.getLines.toSeq) match {
                 case Right(config) => Some(config)
                 case Left(FailParsing(reason)) => println(s"Couldn't parse config: $reason"); None
             }
