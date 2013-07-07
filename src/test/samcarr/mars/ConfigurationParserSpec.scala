@@ -26,6 +26,11 @@ class ConfigurationParserSpec extends FlatSpec with ShouldMatchers {
         )
     }
     
+    it should "fail if there are no lines of config" in {
+        val config = List()
+        checkFailureMessage(config, "Config was empty.")
+    }
+    
     it should "fail if grid dims are not integers" in {
         val config = List("ab c")
         checkFailureMessage(config, "Couldn't parse Mars dimensions from line: ab c")

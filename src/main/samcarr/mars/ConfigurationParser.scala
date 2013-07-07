@@ -16,9 +16,8 @@ object ConfigurationParser {
     val MissionCommandsRegex = """^([LRF]{0,%s})$""".format(MaxCommands).r
     
     def parse(lines: Seq[String]) : Either[FailParsing, Configuration] = {
-        // qq Should check that there *is* a first line, and second line...
-        // First line is grid dimensions.
-        parseGridDimensions(lines.head).right.flatMap { case (maxX, maxY) =>
+        if (lines.isEmpty) Left(FailParsing("Config was empty."))
+        else parseGridDimensions(lines.head).right.flatMap { case (maxX, maxY) =>
             // Each subsequent set of 3 lines defines a robot journey (third line of which is blank).
             val missionLines = lines.tail.grouped(3)
             // Because missionLines is an iterator, this is all (deliberately) lazy from here on, so
