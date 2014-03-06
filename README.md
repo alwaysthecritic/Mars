@@ -8,7 +8,7 @@ Because I was learning Scala and avoiding looking at anybody else's solutions, I
 
 - Mars contains the 'main' function: it reads the config file, runs the missions and writes the output.
 - MissionRunner is the core of the program that actually simulates the robots' missions and probably the most interesting part.
-- A functional approach is used for simulating the missions, preferring immutable data and a pipeline that transforms it (into new immutable data). Therefore relatively 'dumb' data structures are preferred, rather than OO style data+behaviour.
+- A functional approach is used for simulating the missions, preferring immutable data and a pipeline that transforms it (into new immutable data).
     - The string of robot commands are mapped into a list of functions each of which takes a Robot and returns a new Robot. Given a start Robot, running all the command functions on it delivers the end Robot.
     - The abstract Robot class records a specific position and direction of a Robot. HappyRobot and LostRobot case classes extend Robot (algebraic data types) which allows the lost case to be neatly handled by the command functions by simply returning the lost robot as is.
     - It would be purer to make the scent map immutable and pass it through the pipe, but that would almost certainly make the code more complicated for no real added value.
