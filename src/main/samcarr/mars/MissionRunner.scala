@@ -14,29 +14,26 @@ class MissionRunner(config: Configuration) {
 
     def runMissions(): Seq[Robot] = {
         config.missions.map { mission =>
-            // Map the command characters (L, R, F) into functions and then apply them in sequence,
-            // taking an initial Robot through to a finish Robot.
-            val commands = mission.commands.map(functionForChar(_))
+            val commands = mission.commands.map(commandForChar(_))
             commands.foldLeft(mission.start) { (robot, command) => command(robot) }
         }
     }
     
-    private def functionForChar(command: Char): (Robot => Robot) = command match {
+    private def commandForChar(char: Char): (Robot => Robot) = char match {
         case 'L' => ifNotLost(left)
         case 'R' => ifNotLost(right)
         case 'F' => ifNotLost(forward)
     }
 
-    // This is setup to allow currying: effectively wrapping the specific robot commands
-    // and ignoring them if the robot has already been lost.
+    // qq This looks like it could be converted to a monadic approach, which would be an interesting experiment.
     private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = robot match {
-        case happy @ HappyRobot(_, _, _) => func(happy)
-        case lost @ LostRobot(_,_,_) => lost
+        case happy: HappyRobot => func(happy)
+        case lost: LostRobot => lost
     }
     
-    private def left(robot: HappyRobot) = HappyRobot(robot.x, robot.y, leftTurnMap(robot.facing))
+    private def left(robot: HappyRobot) = robot.copy(facing = leftTurnMap(robot.facing));
     
-    private def right(robot: HappyRobot) = HappyRobot(robot.x, robot.y, rightTurnMap(robot.facing))
+    private def right(robot: HappyRobot) = robot.copy(facing = rightTurnMap(robot.facing));
     
     private def forward(robot: HappyRobot) = {
         val potentialNewSituation = robot.facing match {
@@ -46,8 +43,8 @@ class MissionRunner(config: Configuration) {
             case West => HappyRobot(robot.x - 1, robot.y, robot.facing)
         }
         
-        def inBounds(sit: Robot, maxX: Int, maxY: Int): Boolean = {
-            sit.x >= 0 && sit.x <= maxX && sit.y >= 0 && sit.y <= maxY
+        def inBounds(r: Robot, maxX: Int, maxY: Int): Boolean = {
+            r.x >= 0 && r.x <= maxX && r.y >= 0 && r.y <= maxY
         }
         
         if (!inBounds(potentialNewSituation, config.maxX, config.maxY)) {
