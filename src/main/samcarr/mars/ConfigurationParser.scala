@@ -46,7 +46,7 @@ object ConfigurationParser {
         // qq Would be nice to use a for comprehension, but Either.right doesn't support pattern matching
         // for a tuple in a case statement (because it doesn't have filter/withFilter). Similarly in parse().
         parseMissionStartPos(lines(0), maxX, maxY).right flatMap { case (x, y, direction) =>
-            parseMissionCommands(lines(1)).right map (commands => Mission(HappyRobot(x, y, direction), commands))
+            parseMissionCommands(lines(1)).right map (commands => Mission(Robot(x, y, direction), commands))
         }
     }
     

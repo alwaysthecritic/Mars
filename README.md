@@ -9,8 +9,8 @@ Because I was learning Scala and avoiding looking at anybody else's solutions, I
 - Mars contains the 'main' function: it reads the config file, runs the missions and writes the output.
 - MissionRunner is the core of the program that actually simulates the robots' missions and probably the most interesting part.
 - A functional approach is used for simulating the missions, preferring immutable data and a pipeline that transforms it (into new immutable data).
-    - The string of robot commands are mapped into a list of functions each of which takes a Robot and returns a new Robot. Given a start Robot, running all the command functions on it delivers the end Robot.
-    - The abstract Robot class records a specific position and direction of a Robot. HappyRobot and LostRobot case classes extend Robot (algebraic data types) which allows the lost case to be neatly handled by the command functions by simply returning the lost robot as is.
+    - The string of robot commands are mapped into a list of functions each of which takes a Robot from its current state to the next. Given a start Robot, running all the command functions on it delivers the end Robot.
+    - We use Either[Robot, Robot] where Left is a lost robot and Right is a happy robot.
     - It would be purer to make the scent map immutable and pass it through the pipe, but that would almost certainly make the code more complicated for no real added value.
     - ConfigurationParser uses nice, functional error handling, but there's an interesting story behind it.
         - It was originally written so that it threw a BadConfigurationException for each of its error cases, but this highlighted an important issue with exceptions in a non-strict world. The config wasn't actually being fully parsed until attempting to render the output unravelled the whole lazy structure. But if the config was bad, exceptions were thrown at that point, after the readConfig try/catch block was long gone, so they weren't caught and the program fell over in an ugly way.

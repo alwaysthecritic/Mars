@@ -2,15 +2,7 @@ package samcarr.mars
 
 import Direction._
 
-sealed abstract class Robot {
-    val x: Int
-    val y: Int
-    val facing: Direction.Value
-}
-
-case class LostRobot(val x: Int, val y: Int, val facing: Direction.Value) extends Robot
-
-case class HappyRobot(val x: Int, val y: Int, val facing: Direction.Value) extends Robot {
+case class Robot(val x: Int, val y: Int, val facing: Direction.Value) {
     private val leftTurnMap = Map(North -> West, East -> North, South -> East, West -> South)
     private val rightTurnMap = Map(North -> East, East -> South, South -> West, West -> North)
         
@@ -19,9 +11,9 @@ case class HappyRobot(val x: Int, val y: Int, val facing: Direction.Value) exten
     def right() = copy(facing = rightTurnMap(facing));
     
     def forward() = facing match {
-        case North => HappyRobot(x, y + 1, facing)
-        case East => HappyRobot(x + 1, y, facing)
-        case South => HappyRobot(x, y - 1, facing)
-        case West => HappyRobot(x - 1, y, facing)
+        case North => Robot(x, y + 1, facing)
+        case East => Robot(x + 1, y, facing)
+        case South => Robot(x, y - 1, facing)
+        case West => Robot(x - 1, y, facing)
     }
 }

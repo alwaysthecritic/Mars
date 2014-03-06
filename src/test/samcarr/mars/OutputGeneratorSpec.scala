@@ -7,7 +7,7 @@ import Direction._
 class OutputGeneratorSpec extends FlatSpec with ShouldMatchers {
     
     "OutputGenerator" should "produce correct string output" in {
-        val robots = Seq(HappyRobot(1, 1, East), LostRobot(3, 3, North), HappyRobot(2, 3, South))
+        val robots = Seq(Right(Robot(1, 1, East)), Left(Robot(3, 3, North)), Right(Robot(2, 3, South)))
         val output = OutputGenerator.render(robots)
         val outputLines = output.split("\r\n")
         

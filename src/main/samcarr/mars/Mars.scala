@@ -34,7 +34,7 @@ object Mars {
         }
     }
     
-    private def writeOutput(filePath: String, robots: Seq[Robot]) {
+    private def writeOutput(filePath: String, robots: Seq[Either[Robot, Robot]]) {
         val output = OutputGenerator.render(robots)
         withPrintWriter(filePath) { _.write(output) }
 

@@ -5,26 +5,26 @@ import Direction._
 
 class MissionRunner(config: Configuration) {
     
-    type ARobot = Either[LostRobot, HappyRobot]
-    
+    type ARobot = Either[Robot, Robot]
+
     // Use a set to keep track of grid positions where a robot has left a scent, on the presumption
     // that scented positions are sparse - certainly only at the edges of the grid.
     val scentMap = new mutable.HashSet[(Int, Int)]
 
-    def runMissions(): Seq[Robot] = {
+    def runMissions(): Seq[ARobot] = {
         config.missions.map { mission =>
             val commands = mission.commands.map(commandForChar(_))
             commands.foldLeft(Right(mission.initialRobot): ARobot) { (robot, command) => robot.right.flatMap(command) }
-        }.map (_.merge)
+        }
     }
     
-    private def commandForChar(char: Char): (HappyRobot => ARobot) = char match {
+    private def commandForChar(char: Char): (Robot => ARobot) = char match {
         case 'L' => (robot) => Right(robot.left())
         case 'R' => (robot) => Right(robot.right())
         case 'F' => attemptForward
     }
     
-    private def attemptForward(robot: HappyRobot): ARobot = {       
+    private def attemptForward(robot: Robot): ARobot = {
         val forwardRobot = robot.forward
         
         if (!inBounds(forwardRobot)) {
@@ -34,7 +34,7 @@ class MissionRunner(config: Configuration) {
             } else {
                 // No scent-mark, so our robot is now lost, but adds a scent-mark.
                 scentMap.add((robot.x, robot.y))
-                Left(LostRobot(robot.x, robot.y, robot.facing))
+                Left(robot)
             }
         } else {
             Right(forwardRobot)
