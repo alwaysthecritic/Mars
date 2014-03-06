@@ -9,9 +9,6 @@ class MissionRunner(config: Configuration) {
     // that scented positions are sparse - certainly only at the edges of the grid.
     val scentMap = new mutable.HashSet[(Int, Int)]
 
-    val leftTurnMap = Map(North -> West, East -> North, South -> East, West -> South)
-    val rightTurnMap = Map(North -> East, East -> South, South -> West, West -> North)
-
     def runMissions(): Seq[Robot] = {
         config.missions.map { mission =>
             val commands = mission.commands.map(commandForChar(_))
@@ -20,34 +17,22 @@ class MissionRunner(config: Configuration) {
     }
     
     private def commandForChar(char: Char): (Robot => Robot) = char match {
-        case 'L' => ifNotLost(left)
-        case 'R' => ifNotLost(right)
-        case 'F' => ifNotLost(forward)
+        case 'L' => ifNotLost(_.left)
+        case 'R' => ifNotLost(_.right)
+        case 'F' => ifNotLost(attemptForward)
     }
 
     // qq This looks like it could be converted to a monadic approach, which would be an interesting experiment.
+    //    And maybe the scent map could be rolled into that too.
     private def ifNotLost(func: (HappyRobot => Robot))(robot: Robot) = robot match {
         case happy: HappyRobot => func(happy)
         case lost: LostRobot => lost
     }
     
-    private def left(robot: HappyRobot) = robot.copy(facing = leftTurnMap(robot.facing));
-    
-    private def right(robot: HappyRobot) = robot.copy(facing = rightTurnMap(robot.facing));
-    
-    private def forward(robot: HappyRobot) = {
-        val potentialNewSituation = robot.facing match {
-            case North => HappyRobot(robot.x, robot.y + 1, robot.facing)
-            case East => HappyRobot(robot.x + 1, robot.y, robot.facing)
-            case South => HappyRobot(robot.x, robot.y - 1, robot.facing)
-            case West => HappyRobot(robot.x - 1, robot.y, robot.facing)
-        }
+    private def attemptForward(robot: HappyRobot) = {       
+        val forwardRobot = robot.forward
         
-        def inBounds(r: Robot, maxX: Int, maxY: Int): Boolean = {
-            r.x >= 0 && r.x <= maxX && r.y >= 0 && r.y <= maxY
-        }
-        
-        if (!inBounds(potentialNewSituation, config.maxX, config.maxY)) {
+        if (!inBounds(forwardRobot)) {
             if (scentMap(robot.x, robot.y)) {
                 // Previous position was scent-marked - simply ignore the forward command.
                 robot
@@ -57,7 +42,9 @@ class MissionRunner(config: Configuration) {
                 LostRobot(robot.x, robot.y, robot.facing)
             }
         } else {
-            potentialNewSituation
+            forwardRobot
         }
     }
+    
+    private def inBounds(r: Robot) = r.x >= 0 && r.x <= config.maxX && r.y >= 0 && r.y <= config.maxY
 }
